@@ -1,10 +1,79 @@
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_regular.otf')
+        format("opentype");    
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_black.otf')
+        format("opentype");
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_bold.otf')
+        format("opentype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_extrabold.otf')
+        format("opentype");
+    font-weight: 800;
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_light.otf')
+        format("opentype");
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_medium.otf')
+        format("opentype");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "Made Tommy";
+    src: url('../res/fonts/made_tommy/made_tommy_thin.otf')
+        format("opentype");
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: "Arca Majora";
+    src: url('../res/fonts/arca_majora/ArcaMajora3-Bold.otf')
+        format("opentype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Arca Majora";
+    src: url('../res/fonts/arca_majora/ArcaMajora3-Heavy.otf')
+        format("opentype");
+    font-weight: 900;
+}
+
 * {
     box-sizing: border-box;
     font-family: Arial;
 }
 
 body {
-    background-image: url('../res/img/register_bg.png');
     margin: 0;
     padding: 0;
 }
+
+.middle-content {
+    min-width: 700px;
+    max-width: 1200px;
+    width: 70%;
+    margin: auto;
+}
+

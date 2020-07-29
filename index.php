@@ -1,7 +1,3 @@
-<?php
-require './includes/session.php';
-?>
-
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -9,31 +5,22 @@ require './includes/session.php';
         <title>Shop</title>
         <link rel="stylesheet" type="text/css" href="css/generic.css" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <script type="text/javascript" src="scripts/search.js"></script>
     </head>
     <body>
-        <div id="main-body">
-            <h1>Shop.ro</h1>
-            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
-                  name="searchForm" method="post" onsubmit="return onSearchSubmit()"
+        <div id="header">
+            <form class="middle-content" method="post" onsubmit="onSearchSubmit()"
+                  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
                   id="searchForm">
-                <input type="text" name="search-token" placeholder="Descrie produsul" />
-                <button type="submit" name="searchSub">Căutare</button>
+                <a id="header-link" href="index.php">Shop.ro</a>
+                <a class="right-link" href="#">Contul meu</a>
+                <a class="right-link" href="#">Coșul meu</a>
+                <div id="searchInputWrapper">
+                    <input id="searchField" type="text" name="searchToken" 
+                           placeholder="Descrie produsul căutat..." />
+                </div>
+                
             </form>
-            <div id="acc-info-container">
-                <?php
-                if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
-                    ?>
-                    <span><a href="account.php">Contul meu</a> (<?php echo $_SESSION['name']; ?>)</span>
-                    <a href="logout.php">Deconectare</a>
-                    <?php
-                } else {
-                    ?>
-                    <a href="login.php">Conectare</a>
-                    <a href="register.php">Înregistrare</a>
-                    <?php
-                }
-                ?>
-            </div>
         </div>
     </body>
 </html>
