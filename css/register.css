@@ -1,0 +1,138 @@
+form {
+    text-align: center;
+    width: 500px;
+    background-color: #0099cc;
+    margin: 200px auto;
+    padding: 40px;
+    border-bottom-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 1px 1px 0px #b3b3b3,
+        2px 2px 0px #b3b3b3,
+        3px 3px 0px #b3b3b3,
+        4px 4px 0px #b3b3b3,
+        5px 5px 0px #b3b3b3,
+        6px 6px 0px #b3b3b3,
+        25px 19px 46px -16px rgba(64,64,64,1);
+}
+
+.inputWrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+input, button, label {
+    font-size: 1.2em;
+}
+
+.genderContainer {
+    padding: 5px 5px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.genderContainer:hover {
+    color: lightgray;
+}
+
+label {
+    cursor: pointer;
+    transition: color .15s ease-in-out;
+}
+
+input[type="radio"] {
+    cursor: pointer;
+}
+
+input[type="text"], input[type="password"] {
+    outline: none;
+    width: 100%;   
+    text-align: center;
+    padding: 10px 25px;
+    background-color: #f2f2f2;
+    transition: background-color .15s ease-in-out;
+    border: none;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+input[type="text"]:hover, input[type="password"]:hover {
+    background-color: white;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    background-color: white;
+}
+
+button {
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 15px 25px;
+    width: 100%;
+    border: none;
+    transition: background-color .15s ease-in-out;
+    background-color: #8ac7db;
+    color: #333333;
+    outline: none;
+}
+
+button:hover {
+    background-color: lightblue;
+}
+
+.tooltip {    
+    padding: 10px 0;
+    width: 100%;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: black;
+    color: white;
+    z-index: 1;
+    border-radius: 6px;
+    transition: opacity .2s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+
+.tooltip.toggled {
+    visibility: visible;
+    opacity: 1;
+}
+
+input[type="radio"] {
+    outline: none;
+}
+
+form a {
+    transition: color .15s ease-in-out;
+}
+
+form a:hover {
+    color: #4d4dff;
+}
+
+form h1 {
+    font-size: 2.3em;
+    margin: 0 0 15px 0;
+    padding: 0;
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+}
+
+#status {
+    color: white;
+    font-weight: bold;
+}
