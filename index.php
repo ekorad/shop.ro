@@ -18,8 +18,7 @@
                 <div id="searchInputWrapper">
                     <input id="searchField" type="text" name="searchToken" 
                            placeholder="Descrie produsul căutat..." />
-                </div>
-                
+                </div>                
             </form>
         </div>
     </body>
