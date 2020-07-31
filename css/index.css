@@ -1,9 +1,22 @@
-#header {
-    height: 400px;
-    background: #0e8dbc;
+.middle-v-aligned {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-#header-link {
+#header {
+    background-color: #0e8dbc;
+}
+
+#headerForm {
+    height: 100px;
+}
+
+#header-short-home-link {
+    display: none;
+}
+
+#header-home-link, #header-short-home-link {
     float: left;
     text-decoration: none;
     margin: 0;
@@ -11,36 +24,121 @@
     font-family: Arca Majora;
     font-weight: 900;
     font-size: 3em;
-    color: #FFFFFF;
     text-shadow: 0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
-    transition: color .15s ease-in-out;
 }
 
-#header-link:hover {
-    color: #e7f7fd;
-}
-
-#searchForm {
-    padding: 20px 0;
-    /*background-color: red;*/
-}
-
-#searchInputWrapper {
-    width: 50%;
+#right-header-container {
+    height: 100%;
+    width: auto;
     float: right;
-    background-color: gray;
-    margin-left: 30px;
-    margin-top: 10px;
-    display: inline-block;
+}
+
+#right-header-container a {
+    color: white;
+    text-decoration: none;
+    text-shadow: 0 0 10px black;
+}
+
+#right-header-container a span {
+    font-size: 1.3em;
+    font-family: Made Tommy;
+}
+
+#middle-header-container {
+    height: 100%;
+    overflow: auto;
+}
+
+#header-input-wrapper {
+    width: 90%;
+    margin: auto;
+    border: 2px solid lightgray;
+    transition: border-color .15s ease-in-out;
+}
+
+#header-input-wrapper.focused {
+    border-color: #ff4d4d;
 }
 
 #searchField {
     outline: none;
-    width: 100%;
-    padding: 7px 40px 7px 20px;
-    font-size: 1.1em;
+    padding: 9px 45px 9px 10px;
+    display: block;
+    width: 100%;    
+    border: none;
+    font-size: 1em;
+    background-color: white;
+    transition: background-color .15s ease-in-out;
 }
 
-.right-link {
-    float: right;
+#searchField:hover, #searchField:focus {
+    background-color: #e7f7fd;
+}
+
+#header-input-wrapper button {
+    height: 100%;
+    width: 50px;
+    position: absolute;
+    background-color: transparent;
+    right: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: color .15s ease-in-out;
+}
+
+#header-input-wrapper button:hover {
+    color: #b30000;
+}
+
+#header-input-wrapper button:hover + #searchField {
+    background-color: #e7f7fd;
+}
+
+#header-input-wrapper button span {
+    font-size: 1.7em;
+}
+
+#header a {
+    color: white;
+    transition: color .15s ease-in-out;
+}
+
+#header a:hover {
+    color: #ff4d4d;
+}
+
+@media only screen and (max-width: 1150px) {
+    #right-header-container a span {
+        font-size: 2em;
+    }
+
+    .large-width-text {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    
+    .middle-content {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #right-header-container a:last-child {
+        margin-right: 20px;
+    }
+    
+    #header-home-link {
+        display: none;
+    }
+    
+    #header {
+        padding-left: 20px;
+    }
+    
+    #header-short-home-link {
+        display: inline-block;
+    }
 }
