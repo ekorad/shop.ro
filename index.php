@@ -12,7 +12,7 @@
         <div id="header">
             <form class="middle-content" method="post" onsubmit="onSearchSubmit()"
                   action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
-                  id="headerForm">
+                  id="headerForm" name="searchForm">
                 <a class="middle-v-aligned" id="header-home-link" href="index.php">Shop.ro</a>
                 <a class="middle-v-aligned" id="header-short-home-link" href="index.php">S</a>
                 <div id="right-header-container">
@@ -27,7 +27,7 @@
                 </div>
                 <div id="middle-header-container">
                     <div class="middle-v-aligned" id="header-input-wrapper">
-                        <button class="middle-v-aligned" type="submit" name="searchSubmit">
+                        <button title="Căutare" class="middle-v-aligned" type="submit" name="searchSubmit">
                             <span class="icon-search"></span></button>
                         <input type="text" name="searchVal" id="searchField"
                                placeholder="Descrie produsul căutat..." 
@@ -36,5 +36,23 @@
                 </div>
             </form>
         </div>
+        <div id="adv-search-content">
+            <div id="inner-search-content">
+                <div class="card">
+                    <span class="label-span">Categorie:</span>
+                    <hr />
+                </div>
+                <div class="card">
+                    
+                </div>
+                <div class="card">
+                    
+                </div>
+                test
+            </div>
+        </div>
+        <button title="Căutare avansată" onclick="expandAction()" id="adv-search-button">
+            <span class="icon-chevron-down"></span>
+        </button>
     </body>
 </html>

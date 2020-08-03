@@ -5,6 +5,8 @@
 }
 
 #header {
+    position: relative;
+    z-index: 10;
     background-color: #0e8dbc;
 }
 
@@ -118,26 +120,87 @@
     }
 }
 
+#adv-search-content {
+    position: relative;
+    max-height: 10px;
+    overflow: hidden;
+    background-color: lightgray;
+    box-shadow: 0 1px 0px #999,
+        0 2px 0px #999,
+        0 3px 0px #999,
+        0 4px 0px #999,
+        0 5px 0px #999,
+        0 6px 0px #999;
+    z-index: 0;
+    transition: max-height .3s ease-in-out;
+}
+
+#inner-search-content {
+    padding: 25px 50px;
+}
+
+.card {
+    overflow: hidden;
+    float: left;
+    width: 33%;
+    background: cyan;
+}
+
+#adv-search-button {
+    position: relative;
+    z-index: 1;
+    margin: auto;
+    display: block;
+    background-color: lightgray;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0 15px;
+    box-shadow: 1px 1px 0px #999,
+        2px 2px 0px #999,
+        3px 3px 0px #999,
+        4px 4px 0px #999,
+        5px 5px 0px #999,
+        6px 6px 0px #999;    
+}
+
+#adv-search-button span {
+    line-height: 35px;
+    font-size: 1.7em;
+    color: white;
+    transition: color .15s ease-in-out, transform .3s ease-in-out;
+    display: inline-block;
+}
+
+#adv-search-button:hover span {
+    color: #ff4d4d;    
+}
+
+#adv-search-button span.toggled {
+    color: #ff4d4d;
+    transform: rotate(180deg);
+}
+
 @media only screen and (max-width: 800px) {
-    
+
     .middle-content {
         min-width: 0;
         width: 100%;
         max-width: 100%;
     }
-    
+
     #right-header-container a:last-child {
         margin-right: 20px;
     }
-    
+
     #header-home-link {
         display: none;
     }
-    
+
     #header {
         padding-left: 20px;
     }
-    
+
     #header-short-home-link {
         display: inline-block;
     }
