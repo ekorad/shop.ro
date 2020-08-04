@@ -72,10 +72,3 @@ body {
     padding: 0;
 }
 
-.middle-content {
-    min-width: 700px;
-    max-width: 1200px;
-    width: 70%;
-    margin: auto;
-}
-

@@ -1,4 +1,4 @@
-.middle-v-aligned {
+/*.middle-v-aligned {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
@@ -204,4 +204,199 @@
     #header-short-home-link {
         display: inline-block;
     }
+}*/
+
+.middle-v-aligned {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.middle-content {
+    width: 70%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+#header {
+    background-color: #0e8dbc;
+}
+
+#header form {    
+    height: 100px;
+}
+
+#header-home-link {
+    float: left;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    font-family: Arca Majora;
+    font-weight: 900;
+    font-size: 2.5em;
+    color: white;
+    text-shadow: 0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+}
+
+#header .middle-container {
+    float: left;
+    margin-left: 20px;
+    min-width: 350px;
+    width: 45%;
+}
+
+#header .middle-container input {
+    float: left;
+    outline: none;
+    padding: 9px 45px 9px 10px;
+    display: block;
+    width: 100%;    
+    border: none;
+    font-size: 1em;
+    background-color: white;
+    transition: background-color .15s ease-in-out;
+}
+
+#header .middle-container input:hover, #header .middle-container input:focus {
+    background-color: #e7f7fd;
+}
+
+#header .middle-container button {
+    float: right;
+    height: 100%;
+    width: 50px;
+    position: absolute;
+    background-color: transparent;
+    right: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: color .15s ease-in-out;
+}
+
+#header .middle-container button span {
+    font-size: 1.35em;
+}
+
+#header .middle-container button:hover {
+    color: #b30000;
+}
+
+#header .middle-container button:hover + input {
+    background-color: #e7f7fd;
+}
+
+#header .right-container {
+    float: right;
+}
+
+#header .right-container a {
+    color: white;
+    text-decoration: none;
+    text-shadow: 0 0 10px black;
+}
+
+#header .right-container a:first-child {
+    margin-right: 15px;
+}
+
+#header .right-container a span {
+    font-size: 1.3em;
+    font-family: Made Tommy;
+}
+
+#header a {
+    color: white;
+    transition: color .15s ease-in-out;
+}
+
+#header a:hover {
+    color: #ff4d4d;
+}
+
+@media only screen and (max-width: 1250px) {
+    .mobile-hidden {
+        display: none;
+    }
+
+    #header .middle-container {
+        width: 55%;
+    }
+
+    #header .right-container a:first-child {
+        margin-right: 20px;
+    }
+
+    #header .right-container span.icon {
+        font-size: 2em;
+    }
+}
+
+@media only screen and (max-width: 950px) {
+    #header {
+        height: 150px;
+    }
+
+    #header .middle-container {
+        margin-top: 5px;
+        margin-left: 0;
+        clear: both;
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 450px) {
+
+    .middle-v-aligned {
+        top: 0;
+        transform: none;
+    }
+
+    .middle-content {
+        width: 100%;
+    }
+
+    #header {
+        height: auto;
+        padding: 20px;
+    }
+
+    #header form {
+        padding: 0;
+    }
+
+    #header-home-link {
+        font-size: 2em;
+    }
+
+    #header .middle-container {
+        min-width: 0;
+        margin: 10px 0 0 0;
+    }
+
+    #header .middle-container input {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 330px) {
+    #header form {
+        height: 90px;
+    }
+    
+    #header-home-link {
+        font-size: 1.6em;
+    }
+
+    #header .right-container a:first-child {
+        margin-right: 7px;
+    }
+    
+    #header .right-container a {
+        font-size: 0.9em;
+    }
+}
+
+#main-content {
+    height: 1500px;
 }
