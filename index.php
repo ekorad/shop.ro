@@ -1,3 +1,6 @@
+<?php
+require('./includes/connect.php');
+?>
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -14,7 +17,7 @@
                   class="middle-content">
                 <a href="index.php" id="header-home-link"
                    class="middle-v-aligned">Shop.ro</a>
-                   <div class="right-container middle-v-aligned">
+                <div class="right-container middle-v-aligned">
                     <!--php here-->
                     <a href="#">
                         <span class="icon icon-user"></span>
@@ -30,14 +33,17 @@
                         <span class="icon-search"></span>
                     </button>
                     <input type="text" name="searchVal"
-                           placeholder="Descrie produsul căutat..." />
-                    
-                </div>
-                
+                           placeholder="Descrie produsul căutat..." />                    
+                </div>                
             </form>
         </div>
+        <div id="nav">
+
+        </div>
         <div id="main-content">
-            
+            <?php
+                $sql = "SELECT DISTINCT `category` FROM `products`";
+            ?>
         </div>
     </body>
 </html>
