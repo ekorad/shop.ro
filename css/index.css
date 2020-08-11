@@ -11,6 +11,8 @@
 }
 
 #header {
+    position: relative;
+    z-index: 6;
     background-color: #0e8dbc;
 }
 
@@ -106,9 +108,177 @@
     color: #ff4d4d;
 }
 
-@media only screen and (max-width: 1250px) {
+#overlay {
+    cursor: pointer;
+    transition: width .30s ease-in-out;
+    position: fixed;
+    width: 0;
+    height: 100%;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+#overlay.expanded {
+    width: 100%;
+}
+
+/* 
+ -----------------------------------------------------------------------------
+ Navigatie
+ -----------------------------------------------------------------------------
+*/
+
+#nav {
+    background-color: #ff4d4d;
+}
+
+#nav ul {
+    list-style-type: none;
+    padding: 0;
+    overflow: hidden;
+}
+
+#nav ul li {
+    float: left;
+    transition: background-color .15s ease-in-out;
+}
+
+#nav ul li:last-child {
+    float: right;
+}
+
+#nav ul li a {
+    font-family: Verdana;
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+#nav .dropwdown-content {
+    visibility: hidden;
+    display: none;
+    position: absolute;
+    background-color: #ff9999;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    animation: fade .15s ease-in-out;
+    transition: max-height .3s ease-in-out;
+}
+
+#nav .dropwdown-content a {
+    transition: background-color .15s ease-in-out;
+    text-align: left;
+    display: block;
+}
+
+
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+#mobile-menu-button {
+    text-decoration: none;
+    font-size: 2em;
+    margin-right: 15px;
+    float: left;
+    display: none;
+    text-shadow: 0 0 10px black;
+}
+
+#nav ul li:hover {
+    background-color: #ff9999;
+}
+
+a.toggled {
+    background-color: #ff9999;
+}
+
+/* 
+ -----------------------------------------------------------------------------
+ Media Queries
+ -----------------------------------------------------------------------------
+*/
+
+@media only screen and (min-width: 1300px) {
+
+    #nav ul li:hover .dropwdown-content {
+        display: block;
+        visibility: visible;
+    }
+
+    #nav .dropwdown-content a:hover {
+        background-color: #ff8080;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    #mobile-menu-button {
+        display: inline-block;
+    }
+
     .mobile-hidden {
         display: none;
+    }
+
+    #nav {
+        -webkit-box-shadow: 3px 3px 15px 0px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow:    3px 3px 15px 0px rgba(0, 0, 0, 0.4);
+        box-shadow:         3px 3px 15px 0px rgba(0, 0, 0, 0.4);
+        z-index: 5;
+        width: 300px;
+        position: relative;
+        left: -500px;
+        transition: left .3s ease-in-out;
+    }
+
+    #nav.expanded {
+        left: 0;
+    }
+
+    #nav ul {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #nav ul li {
+        float: none;
+        width: 100%;
+    }
+
+    #nav ul li a {
+        width: 100%;
+        text-align: left;
+        padding: 15px 40px;
+    }
+
+    #nav ul li div a {
+        padding-left: 60px;
+        background-color: #ff6666;
+    }
+
+    #nav ul li div a:hover {
+        background-color: #ffb3b3;
+    }
+
+    #nav .dropwdown-content {
+        visibility: visible;
+        animation: none;
+        display: block;
+        position: static;
+        max-height: 0;
+        overflow: hidden;
     }
 
     #header .middle-container {
@@ -124,7 +294,7 @@
     }
 }
 
-@media only screen and (max-width: 950px) {
+@media only screen and (max-width: 1050px) {
     #header {
         height: 150px;
     }
@@ -135,6 +305,18 @@
         clear: both;
         width: 100%;
     }
+}
+
+@media only screen and (max-width: 500px) {
+    #nav {
+        width: 100%;
+    }
+
+    #nav ul li a,  #nav .dropwdown-content a {
+        padding: 15px 0;
+        text-align: center;
+    }
+
 }
 
 @media only screen and (max-width: 450px) {
@@ -175,7 +357,7 @@
     #header form {
         height: 90px;
     }
-    
+
     #header-home-link {
         font-size: 1.6em;
     }
@@ -183,7 +365,7 @@
     #header .right-container a:first-child {
         margin-right: 7px;
     }
-    
+
     #header .right-container a {
         font-size: 0.9em;
     }
