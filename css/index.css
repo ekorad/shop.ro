@@ -237,7 +237,7 @@ a.toggled {
         box-shadow:         3px 3px 15px 0px rgba(0, 0, 0, 0.4);
         z-index: 5;
         width: 300px;
-        position: relative;
+        position: absolute;
         left: -500px;
         transition: left .3s ease-in-out;
     }

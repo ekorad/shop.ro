@@ -57,7 +57,7 @@ require('./includes/connect.php');
                 <li>
                     <a class="btn-expand" href="javascript:void(0)" onclick="navExpandAction(this)">Laptopuri</a>
                     <div class="dropwdown-content">
-                        <a href="#">Notebook-uri</a>
+                        <a href="produse/notebook.php">Notebook-uri</a>
                         <a href="#">Ultrabook-uri</a>
                     </div>
                 </li>
