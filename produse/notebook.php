@@ -119,51 +119,22 @@ $subcat = "notebook";
         <div id="search-config">
             <span class="search-filter-label">Preț:</span><br />
             <?php
-
-            function get_db_filters() {
-                global $conn, $cat, $subcat;
-                $sql = "SELECT MIN(`price`), MAX(`price`) FROM `products`"
-                        . " WHERE `category` = ? AND `subcategory` = ?";
-                $db_price_filter_stmt = $conn->prepare($sql);
-                $db_price_filter_stmt->bind_param("ss", $cat, $subcat);
-                $db_price_filter_stmt->execute();
-                $db_price_filter_stmt->bind_result($db_filter['price_stored_min'], $db_filter['price_stored_max']);
-                $db_price_filter_stmt->fetch();
-                $db_price_filter_stmt->close();
-                
-                $sql = "SHOW COLUMNS FROM `$subcat`";
-                $result = $conn->query($sql);
-                $result->fetch_assoc();
-                while ($row = $result->fetch_assoc()) {
-                    
-                }
-                
-                return $db_filter;
-            }
-
-            $db_filters = get_db_filters();
-
             $sql = "SELECT MIN(`price`), MAX(`price`) FROM `products`"
                     . " WHERE `category` = ? AND `subcategory` = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $cat, $subcat);
-            $stmt->execute();
-            $min_price = NULL;
-            $max_price = NULL;
-            $stmt->bind_result($min_price, $max_price);
-            $stmt->fetch();
-            $price_step = ($max_price - $min_price) / 5;
-            $first_price_range = (string) $min_price;
-            $last_price_range = (string) ($min_price + (4 * $price_step));
-            $stmt->close();
-            ?>            
-            <label><input type = "radio" name = "price"
-                          value="<?php echo "<" . $first_price_range; ?>" form = "searchForm"/><?php echo "Sub " . $first_price_range . " lei"; ?>
-            </label><br />
+            $price_range_stmt = $conn->prepare($sql);
+            $price_range_stmt->bind_param("ss", $cat, $subcat);
+            $price_range_stmt->execute();
+            $price_range_stmt->bind_result($db_range['min_price'], $db_range['max_price']);
+            $price_range_stmt->fetch();
+            $price_step = ($db_range['max_price'] - $db_range['min_price']) / 5;
+            $first_price_range = (string) $db_range['min_price'];
+            $last_price_range = (string) ($db_range['min_price'] + (4 * $price_step));
+            $price_range_stmt->close();
+            ?>
             <?php
-            for ($i = 1; $i < 4; $i++) {
-                $price_string = ($min_price + ($i * $price_step)) . "-"
-                        . ($min_price + (($i + 1) * $price_step));
+            for ($i = 0; $i < 5; $i++) {
+                $price_string = ($db_range['min_price'] + ($i * $price_step)) . "-"
+                        . ($db_range['min_price'] + (($i + 1) * $price_step));
                 ?>
                 <label><input type="radio" name="price"
                               value="<?php echo $price_string; ?>" form="searchForm"/><?php echo $price_string . " lei"; ?>
@@ -171,10 +142,147 @@ $subcat = "notebook";
                 <?php
             }
             ?>
-            <label><input type = "radio" name = "price"
-                          value="<?php echo ">" . $last_price_range; ?>" form = "searchForm"/><?php echo "Peste " . $last_price_range . " lei"; ?>
-            </label>
+            <span class="search-filter-label">Producător:</span><br />
             <?php
+            $sql = "SELECT DISTINCT `cpu_manufacturer` FROM `notebook`";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="cpu_manufacturer"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <?php
+            }
+
+            define("CPU_FREQ_FILTER_NUM_STEPS", 5);
+
+            $sql = "SELECT MIN(`cpu_freq`), MAX(`cpu_freq`) FROM `notebook`";
+            $result = $conn->query($sql);
+            $row = $result->fetch_row();
+            $db_range['min_freq'] = intval($row[0]);
+            $db_range['max_freq'] = intval($row[1]);
+            $freq_step = ($db_range['max_freq'] - $db_range['min_freq']) / CPU_FREQ_FILTER_NUM_STEPS;
+            ?>
+            <br />
+            <span class="search-filter-label">Frecvență:</span><br />
+            <?php
+            for ($i = 0; $i < CPU_FREQ_FILTER_NUM_STEPS; $i++) {
+                $crt_freq_min = $db_range['min_freq'] + $i * $freq_step;
+                $crt_freq_max = $crt_freq_min + $freq_step;
+                $crt_freq_string = $crt_freq_min . "-" . $crt_freq_max;
+                ?>
+                <label>
+                    <input type="radio" name="cpu_freq"
+                           value="<?php echo $crt_freq_string; ?>" form="searchForm" />
+                           <?php echo $crt_freq_string . " MHz"; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+            <br />
+            <span class="search-filter-label">Număr nuclee:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `cpu_cores` FROM `notebook` ORDER BY `cpu_cores` ASC";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="cpu_cores"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+            <br />
+            <span class="search-filter-label">Producător:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `gpu_manufacturer` FROM `notebook`";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="gpu_manufacturer"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+            <br />
+            <span class="search-filter-label">Model:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `gpu_model` FROM `notebook`";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="gpu_model"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+            <br />
+            <span class="search-filter-label">Capacitate HDD:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `hdd_cap` FROM `notebook` WHERE `hdd_cap` != 0 ORDER BY `hdd_cap` ASC";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="hdd_cap"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+            <br />
+            <span class="search-filter-label">Viteză HDD:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `hdd_speed` FROM `notebook` WHERE `hdd_speed` != 0 ORDER BY `hdd_speed` ASC";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="hdd_speed"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
+            ?>
+                <br />
+            <span class="search-filter-label">Capacitate SSD:</span>
+            <br />
+            <?php
+            $sql = "SELECT DISTINCT `ssd_cap` FROM `notebook` WHERE `ssd_cap` != 0 ORDER BY `ssd_cap` ASC";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_row()) {
+                ?>
+                <label>
+                    <input type="radio" name="ssd_cap"
+                           value="<?php echo $row[0] ?>" form="searchForm" />
+                           <?php echo $row[0]; ?>
+                </label>
+                <br />
+                <?php
+            }
             ?>
         </div>
         <div id="main-content">
@@ -182,6 +290,8 @@ $subcat = "notebook";
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
                 $filter['min_price'] = 0;
                 $filter['max_price'] = 999999999;
+                $filter['min_freq'] = 0;
+                $filter['max_freq'] = 50000;
                 if (isset($_POST['price'])) {
                     $filter_price_range = str_replace('/\s+/', '', $_POST['price']);
                     if ($filter_price_range[0] === "<") {
@@ -196,7 +306,7 @@ $subcat = "notebook";
                 // handle search filter
 
                 $sql = "SELECT  `id`, `name`, `price`, `quantity` FROM `products` WHERE"
-                        . " `price` > ? AND `price` < ?";
+                        . " `price` >= ? AND `price` <= ?";
 
                 $search_product_stmt = $conn->prepare($sql);
                 $search_product_stmt->bind_param("ii", $filter['min_price'], $filter['max_price']);
@@ -206,8 +316,6 @@ $subcat = "notebook";
                     echo $row['name'] . " " . $row['price'] . "<br />";
                 }
                 $search_product_stmt->close();
-
-                echo $filter['min_price'] . " " . $filter['max_price'];
             }
             ?>
         </div>
