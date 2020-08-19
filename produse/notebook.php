@@ -267,7 +267,7 @@ $subcat = "notebook";
                 <?php
             }
             ?>
-                <br />
+            <br />
             <span class="search-filter-label">Capacitate SSD:</span>
             <br />
             <?php
@@ -287,35 +287,89 @@ $subcat = "notebook";
         </div>
         <div id="main-content">
             <?php
+            $specific_filter = array();
+
+            $min_query_price = 0;
+            $max_query_price = 999999999;
+            $min_cpu_freq = 0;
+            $max_cpu_freq = 50000;
+
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
-                $filter['min_price'] = 0;
-                $filter['max_price'] = 999999999;
-                $filter['min_freq'] = 0;
-                $filter['max_freq'] = 50000;
-                if (isset($_POST['price'])) {
-                    $filter_price_range = str_replace('/\s+/', '', $_POST['price']);
-                    if ($filter_price_range[0] === "<") {
-                        $filter['max_price'] = intval(substr($filter_price_range, 1));
-                    } else if ($filter_price_range[0] === ">") {
-                        $filter['min_price'] = intval(substr($filter_price_range, 1));
-                    } else {
-                        $filter['min_price'] = intval(substr($filter_price_range, 0, strpos($filter_price_range, "-")));
-                        $filter['max_price'] = intval(substr($filter_price_range, strpos($filter_price_range, "-") + 1));
-                    }
+
+                if (isset($_POST['price']) && !empty($_POST['price'])) {
+                    $price = $_POST['price'];
+                    $min_query_price = intval(substr($price, 0, strpos($price, "-")));
+                    $max_query_price = intval(substr($price, strpos($price, "-") + 1));
                 }
-                // handle search filter
 
-                $sql = "SELECT  `id`, `name`, `price`, `quantity` FROM `products` WHERE"
-                        . " `price` >= ? AND `price` <= ?";
+                if (isset($_POST['cpu_freq']) && !empty($_POST['cpu_freq'])) {
+                    $cpu_freq = $_POST['cpu_freq'];
+                    $min_cpu_freq = intval(substr($cpu_freq, 0, strpos($cpu_freq, "-")));
+                    $max_cpu_freq = intval(substr($cpu_freq, strpos($cpu_freq, "-") + 1));
 
-                $search_product_stmt = $conn->prepare($sql);
-                $search_product_stmt->bind_param("ii", $filter['min_price'], $filter['max_price']);
-                $search_product_stmt->execute();
-                $search_product_result = $search_product_stmt->get_result();
-                while ($row = $search_product_result->fetch_assoc()) {
+                    $specific_filter[] = "`cpu_freq` >= $min_cpu_freq AND `cpu_freq` <= $max_cpu_freq";
+                }
+
+                if (isset($_POST['cpu_manufacturer']) && !empty($_POST['cpu_manufacturer'])) {
+                    $cpu_manufacturer = $_POST['cpu_manufacturer'];
+                    $specific_filter[] = "`cpu_manufacturer` = '$cpu_manufacturer'";
+                }
+
+                if (isset($_POST['cpu_cores']) && !empty($_POST['cpu_cores'])) {
+                    $cpu_cores = $_POST['cpu_cores'];
+                    $specific_filter[] = "`cpu_cores` = $cpu_cores";
+                }
+
+                if (isset($_POST['gpu_manufacturer']) && !empty($_POST['gpu_manufacturer'])) {
+                    $gpu_manufacturer = $_POST['gpu_manufacturer'];
+                    $specific_filter[] = "`gpu_manufacturer` = '$gpu_manufacturer'";
+                }
+
+                if (isset($_POST['gpu_model']) && !empty($_POST['gpu_model'])) {
+                    $gpu_model = $_POST['gpu_model'];
+                    $specific_filter[] = "`gpu_model` = '$gpu_model'";
+                }
+
+                if (isset($_POST['hdd_cap']) && !empty($_POST['hdd_cap'])) {
+                    $hdd_cap = $_POST['hdd_cap'];
+                    $specific_filter[] = "`hdd_cap` = $hdd_cap";
+                }
+
+                if (isset($_POST['hdd_speed']) && !empty($_POST['hdd_speed'])) {
+                    $hdd_speed = $_POST['hdd_speed'];
+                    $specific_filter[] = "`hdd_speed` = $hdd_speed";
+                }
+
+                if (isset($_POST['ssd_cap']) && !empty($_POST['ssd_cap'])) {
+                    $ssd_speed = $_POST['ssd_cap'];
+                    $specific_filter[] = "`ssd_cap` = $ssd_speed";
+                }
+            }
+
+            $sql = "SELECT `id` FROM `notebook`";
+
+            if (count($specific_filter) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $specific_filter);
+            }
+
+//            echo $sql;
+
+            $result = $conn->query($sql);
+            $ids = array();
+            while ($row = $result->fetch_assoc()) {
+                $ids[] = intval($row['id']);
+            }
+
+            if (!empty($ids)) {
+                $id_range = "(" . implode(",", $ids) . ")";
+
+                $sql = "SELECT `name`, `price`, `quantity` FROM `products`"
+                        . " WHERE `id` IN " . $id_range . " AND `price` >= $min_query_price"
+                        . " AND `price` <= $max_query_price";
+                $result = $conn->query($sql);
+                while ($row = $result->fetch_assoc()) {
                     echo $row['name'] . " " . $row['price'] . "<br />";
                 }
-                $search_product_stmt->close();
             }
             ?>
         </div>
