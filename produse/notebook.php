@@ -12,6 +12,7 @@ $subcat = "notebook";
         <title>Shop</title>
         <link rel="stylesheet" type="text/css" href="../css/generic.css" />
         <link rel="stylesheet" type="text/css" href="../css/index.css" />
+        <link rel="stylesheet" type="text/css" href="../css/products.css" />
         <script type="text/javascript" src="../scripts/search.js"></script>
         <script>
             setInterval(function () {
@@ -116,262 +117,326 @@ $subcat = "notebook";
                 <li><a href="#">Contact</a></li>
             </ul>
         </div>
-        <div id="search-config">
-            <span class="search-filter-label">Preț:</span><br />
-            <?php
-            $sql = "SELECT MIN(`price`), MAX(`price`) FROM `products`"
-                    . " WHERE `category` = ? AND `subcategory` = ?";
-            $price_range_stmt = $conn->prepare($sql);
-            $price_range_stmt->bind_param("ss", $cat, $subcat);
-            $price_range_stmt->execute();
-            $price_range_stmt->bind_result($db_range['min_price'], $db_range['max_price']);
-            $price_range_stmt->fetch();
-            $price_step = ($db_range['max_price'] - $db_range['min_price']) / 5;
-            $first_price_range = (string) $db_range['min_price'];
-            $last_price_range = (string) ($db_range['min_price'] + (4 * $price_step));
-            $price_range_stmt->close();
-            ?>
-            <?php
-            for ($i = 0; $i < 5; $i++) {
-                $price_string = ($db_range['min_price'] + ($i * $price_step)) . "-"
-                        . ($db_range['min_price'] + (($i + 1) * $price_step));
-                ?>
-                <label><input type="radio" name="price"
-                              value="<?php echo $price_string; ?>" form="searchForm"/><?php echo $price_string . " lei"; ?>
-                </label><br />
-                <?php
-            }
-            ?>
-            <span class="search-filter-label">Producător:</span><br />
-            <?php
-            $sql = "SELECT DISTINCT `cpu_manufacturer` FROM `notebook`";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="cpu_manufacturer"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <?php
-            }
+        <div id="main-content" class="middle-content">
+            <div id="search-config">
+                <div class="filter-card">
+                    <span class="search-filter-label">Producător:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `manufacturer` FROM `products`";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="manufacturer"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Preț:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT MIN(`price`), MAX(`price`) FROM `products`"
+                                . " WHERE `category` = ? AND `subcategory` = ?";
+                        $price_range_stmt = $conn->prepare($sql);
+                        $price_range_stmt->bind_param("ss", $cat, $subcat);
+                        $price_range_stmt->execute();
+                        $price_range_stmt->bind_result($db_range['min_price'], $db_range['max_price']);
+                        $price_range_stmt->fetch();
+                        $price_step = ($db_range['max_price'] - $db_range['min_price']) / 5;
+                        $first_price_range = (string) $db_range['min_price'];
+                        $last_price_range = (string) ($db_range['min_price'] + (4 * $price_step));
+                        $price_range_stmt->close();
+                        ?>
+                        <?php
+                        for ($i = 0; $i < 5; $i++) {
+                            $price_string = ($db_range['min_price'] + ($i * $price_step)) . "-"
+                                    . ($db_range['min_price'] + (($i + 1) * $price_step));
+                            ?>
+                            <label><input type="radio" name="price"
+                                          value="<?php echo $price_string; ?>" form="searchForm"/><?php echo $price_string . " lei"; ?>
+                            </label><br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Producător procesor:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `cpu_manufacturer` FROM `notebook`";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="cpu_manufacturer"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <?php
+                        }
 
-            define("CPU_FREQ_FILTER_NUM_STEPS", 5);
+                        define("CPU_FREQ_FILTER_NUM_STEPS", 5);
 
-            $sql = "SELECT MIN(`cpu_freq`), MAX(`cpu_freq`) FROM `notebook`";
-            $result = $conn->query($sql);
-            $row = $result->fetch_row();
-            $db_range['min_freq'] = intval($row[0]);
-            $db_range['max_freq'] = intval($row[1]);
-            $freq_step = ($db_range['max_freq'] - $db_range['min_freq']) / CPU_FREQ_FILTER_NUM_STEPS;
-            ?>
-            <br />
-            <span class="search-filter-label">Frecvență:</span><br />
-            <?php
-            for ($i = 0; $i < CPU_FREQ_FILTER_NUM_STEPS; $i++) {
-                $crt_freq_min = $db_range['min_freq'] + $i * $freq_step;
-                $crt_freq_max = $crt_freq_min + $freq_step;
-                $crt_freq_string = $crt_freq_min . "-" . $crt_freq_max;
-                ?>
-                <label>
-                    <input type="radio" name="cpu_freq"
-                           value="<?php echo $crt_freq_string; ?>" form="searchForm" />
-                           <?php echo $crt_freq_string . " MHz"; ?>
-                </label>
-                <br />
+                        $sql = "SELECT MIN(`cpu_freq`), MAX(`cpu_freq`) FROM `notebook`";
+                        $result = $conn->query($sql);
+                        $row = $result->fetch_row();
+                        $db_range['min_freq'] = intval($row[0]);
+                        $db_range['max_freq'] = intval($row[1]);
+                        $freq_step = ($db_range['max_freq'] - $db_range['min_freq']) / CPU_FREQ_FILTER_NUM_STEPS;
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Frecvență:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        for ($i = 0; $i < CPU_FREQ_FILTER_NUM_STEPS; $i++) {
+                            $crt_freq_min = $db_range['min_freq'] + $i * $freq_step;
+                            $crt_freq_max = $crt_freq_min + $freq_step;
+                            $crt_freq_string = $crt_freq_min . "-" . $crt_freq_max;
+                            ?>
+                            <label>
+                                <input type="radio" name="cpu_freq"
+                                       value="<?php echo $crt_freq_string; ?>" form="searchForm" />
+                                       <?php echo $crt_freq_string . " MHz"; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Număr nuclee:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `cpu_cores` FROM `notebook` ORDER BY `cpu_cores` ASC";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="cpu_cores"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Producător:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `gpu_manufacturer` FROM `notebook`";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="gpu_manufacturer"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Model:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `gpu_model` FROM `notebook`";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="gpu_model"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Capacitate HDD:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `hdd_cap` FROM `notebook` WHERE `hdd_cap` != 0 ORDER BY `hdd_cap` ASC";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="hdd_cap"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Viteză HDD:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `hdd_speed` FROM `notebook` WHERE `hdd_speed` != 0 ORDER BY `hdd_speed` ASC";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="hdd_speed"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <div class="filter-card">
+                    <span class="search-filter-label">Capacitate SSD:</span>
+                    <div class="filter-card-content">
+                        <?php
+                        $sql = "SELECT DISTINCT `ssd_cap` FROM `notebook` WHERE `ssd_cap` != 0 ORDER BY `ssd_cap` ASC";
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_row()) {
+                            ?>
+                            <label>
+                                <input type="radio" name="ssd_cap"
+                                       value="<?php echo $row[0] ?>" form="searchForm" />
+                                       <?php echo $row[0]; ?>
+                            </label>
+                            <br />
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div id="product-content">
                 <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Număr nuclee:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `cpu_cores` FROM `notebook` ORDER BY `cpu_cores` ASC";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="cpu_cores"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Producător:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `gpu_manufacturer` FROM `notebook`";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="gpu_manufacturer"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Model:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `gpu_model` FROM `notebook`";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="gpu_model"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Capacitate HDD:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `hdd_cap` FROM `notebook` WHERE `hdd_cap` != 0 ORDER BY `hdd_cap` ASC";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="hdd_cap"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Viteză HDD:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `hdd_speed` FROM `notebook` WHERE `hdd_speed` != 0 ORDER BY `hdd_speed` ASC";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="hdd_speed"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-            <br />
-            <span class="search-filter-label">Capacitate SSD:</span>
-            <br />
-            <?php
-            $sql = "SELECT DISTINCT `ssd_cap` FROM `notebook` WHERE `ssd_cap` != 0 ORDER BY `ssd_cap` ASC";
-            $result = $conn->query($sql);
-            while ($row = $result->fetch_row()) {
-                ?>
-                <label>
-                    <input type="radio" name="ssd_cap"
-                           value="<?php echo $row[0] ?>" form="searchForm" />
-                           <?php echo $row[0]; ?>
-                </label>
-                <br />
-                <?php
-            }
-            ?>
-        </div>
-        <div id="main-content">
-            <?php
-            $specific_filter = array();
+                $specific_filter = array();
 
-            $min_query_price = 0;
-            $max_query_price = 999999999;
-            $min_cpu_freq = 0;
-            $max_cpu_freq = 50000;
+                $manufacturer = NULL;
+                $min_query_price = 0;
+                $max_query_price = 999999999;
+                $min_cpu_freq = 0;
+                $max_cpu_freq = 50000;
 
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
+                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
 
-                if (isset($_POST['price']) && !empty($_POST['price'])) {
-                    $price = $_POST['price'];
-                    $min_query_price = intval(substr($price, 0, strpos($price, "-")));
-                    $max_query_price = intval(substr($price, strpos($price, "-") + 1));
+                    if (isset($_POST['price']) && !empty($_POST['price'])) {
+                        $price = $_POST['price'];
+                        $min_query_price = intval(substr($price, 0, strpos($price, "-")));
+                        $max_query_price = intval(substr($price, strpos($price, "-") + 1));
+                    }
+
+                    if (isset($_POST['manufacturer']) && !empty($_POST['manufacturer'])) {
+                        $manufacturer = $_POST['manufacturer'];
+                    }
+
+                    // specific filters
+
+                    if (isset($_POST['cpu_freq']) && !empty($_POST['cpu_freq'])) {
+                        $cpu_freq = $_POST['cpu_freq'];
+                        $min_cpu_freq = intval(substr($cpu_freq, 0, strpos($cpu_freq, "-")));
+                        $max_cpu_freq = intval(substr($cpu_freq, strpos($cpu_freq, "-") + 1));
+
+                        $specific_filter[] = "`cpu_freq` >= $min_cpu_freq AND `cpu_freq` <= $max_cpu_freq";
+                    }
+
+                    if (isset($_POST['cpu_manufacturer']) && !empty($_POST['cpu_manufacturer'])) {
+                        $cpu_manufacturer = $_POST['cpu_manufacturer'];
+                        $specific_filter[] = "`cpu_manufacturer` = '$cpu_manufacturer'";
+                    }
+
+                    if (isset($_POST['cpu_cores']) && !empty($_POST['cpu_cores'])) {
+                        $cpu_cores = $_POST['cpu_cores'];
+                        $specific_filter[] = "`cpu_cores` = $cpu_cores";
+                    }
+
+                    if (isset($_POST['gpu_manufacturer']) && !empty($_POST['gpu_manufacturer'])) {
+                        $gpu_manufacturer = $_POST['gpu_manufacturer'];
+                        $specific_filter[] = "`gpu_manufacturer` = '$gpu_manufacturer'";
+                    }
+
+                    if (isset($_POST['gpu_model']) && !empty($_POST['gpu_model'])) {
+                        $gpu_model = $_POST['gpu_model'];
+                        $specific_filter[] = "`gpu_model` = '$gpu_model'";
+                    }
+
+                    if (isset($_POST['hdd_cap']) && !empty($_POST['hdd_cap'])) {
+                        $hdd_cap = $_POST['hdd_cap'];
+                        $specific_filter[] = "`hdd_cap` = $hdd_cap";
+                    }
+
+                    if (isset($_POST['hdd_speed']) && !empty($_POST['hdd_speed'])) {
+                        $hdd_speed = $_POST['hdd_speed'];
+                        $specific_filter[] = "`hdd_speed` = $hdd_speed";
+                    }
+
+                    if (isset($_POST['ssd_cap']) && !empty($_POST['ssd_cap'])) {
+                        $ssd_speed = $_POST['ssd_cap'];
+                        $specific_filter[] = "`ssd_cap` = $ssd_speed";
+                    }
                 }
 
-                if (isset($_POST['cpu_freq']) && !empty($_POST['cpu_freq'])) {
-                    $cpu_freq = $_POST['cpu_freq'];
-                    $min_cpu_freq = intval(substr($cpu_freq, 0, strpos($cpu_freq, "-")));
-                    $max_cpu_freq = intval(substr($cpu_freq, strpos($cpu_freq, "-") + 1));
+                $sql = "SELECT `id` FROM `notebook`";
 
-                    $specific_filter[] = "`cpu_freq` >= $min_cpu_freq AND `cpu_freq` <= $max_cpu_freq";
+                if (count($specific_filter) > 0) {
+                    $sql .= " WHERE " . implode(" AND ", $specific_filter);
                 }
-
-                if (isset($_POST['cpu_manufacturer']) && !empty($_POST['cpu_manufacturer'])) {
-                    $cpu_manufacturer = $_POST['cpu_manufacturer'];
-                    $specific_filter[] = "`cpu_manufacturer` = '$cpu_manufacturer'";
-                }
-
-                if (isset($_POST['cpu_cores']) && !empty($_POST['cpu_cores'])) {
-                    $cpu_cores = $_POST['cpu_cores'];
-                    $specific_filter[] = "`cpu_cores` = $cpu_cores";
-                }
-
-                if (isset($_POST['gpu_manufacturer']) && !empty($_POST['gpu_manufacturer'])) {
-                    $gpu_manufacturer = $_POST['gpu_manufacturer'];
-                    $specific_filter[] = "`gpu_manufacturer` = '$gpu_manufacturer'";
-                }
-
-                if (isset($_POST['gpu_model']) && !empty($_POST['gpu_model'])) {
-                    $gpu_model = $_POST['gpu_model'];
-                    $specific_filter[] = "`gpu_model` = '$gpu_model'";
-                }
-
-                if (isset($_POST['hdd_cap']) && !empty($_POST['hdd_cap'])) {
-                    $hdd_cap = $_POST['hdd_cap'];
-                    $specific_filter[] = "`hdd_cap` = $hdd_cap";
-                }
-
-                if (isset($_POST['hdd_speed']) && !empty($_POST['hdd_speed'])) {
-                    $hdd_speed = $_POST['hdd_speed'];
-                    $specific_filter[] = "`hdd_speed` = $hdd_speed";
-                }
-
-                if (isset($_POST['ssd_cap']) && !empty($_POST['ssd_cap'])) {
-                    $ssd_speed = $_POST['ssd_cap'];
-                    $specific_filter[] = "`ssd_cap` = $ssd_speed";
-                }
-            }
-
-            $sql = "SELECT `id` FROM `notebook`";
-
-            if (count($specific_filter) > 0) {
-                $sql .= " WHERE " . implode(" AND ", $specific_filter);
-            }
 
 //            echo $sql;
 
-            $result = $conn->query($sql);
-            $ids = array();
-            while ($row = $result->fetch_assoc()) {
-                $ids[] = intval($row['id']);
-            }
-
-            if (!empty($ids)) {
-                $id_range = "(" . implode(",", $ids) . ")";
-
-                $sql = "SELECT `name`, `price`, `quantity` FROM `products`"
-                        . " WHERE `id` IN " . $id_range . " AND `price` >= $min_query_price"
-                        . " AND `price` <= $max_query_price";
                 $result = $conn->query($sql);
+                $ids = array();
                 while ($row = $result->fetch_assoc()) {
-                    echo $row['name'] . " " . $row['price'] . "<br />";
+                    $ids[] = intval($row['id']);
                 }
-            }
-            ?>
+
+                if (!empty($ids)) {
+                    $id_range = "(" . implode(",", $ids) . ")";
+
+                    $sql = "SELECT `id`, `name`, `price`, `quantity` FROM `products`"
+                            . " WHERE `id` IN " . $id_range . " AND `price` >= $min_query_price"
+                            . " AND `price` <= $max_query_price";
+
+                    if (!empty($manufacturer)) {
+                        $sql .= " AND `manufacturer` = '$manufacturer'";
+                    }
+
+                    $result = $conn->query($sql);
+                    while ($row = $result->fetch_assoc()) {
+                        ?>
+                        <div class="product-card">
+                            <div class="product-card-content">
+                                <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
+                                     height=100 width=150 /><br />
+                                <span class="product-name"><?php echo $row['name']; ?></span>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
+            </div>
         </div>
     </body>
 </html>
