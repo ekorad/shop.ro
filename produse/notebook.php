@@ -3,6 +3,15 @@ require('../includes/connect.php');
 
 $cat = "laptop";
 $subcat = "notebook";
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
+    if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
+        header("Location: ./../login.php");
+        exit;
+    } else {
+        
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -34,18 +43,34 @@ $subcat = "notebook";
                    href="javascript:void(0)" onclick="mobileMenuButtonAction()">
                     <span class="icon-menu"></span>
                 </a>
-                <a href="index.php" id="header-home-link"
+                <a href="./../index.php" id="header-home-link"
                    class="middle-v-aligned">Shop.ro</a>
                 <div class="right-container middle-v-aligned">
-                    <!--php here-->
-                    <a href="#">
-                        <span class="icon icon-user"></span>
-                        <span class="mobile-hidden">Contul meu</span>
-                    </a>
-                    <a href="#">
-                        <span class="icon icon-cart"></span>
-                        <span class="mobile-hidden">Coșul meu</span>
-                    </a>
+                    <?php
+                    if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true) {
+                        ?>
+                        <a href="./../account.php">
+                            <span class="icon icon-user"></span>
+                            <span class="mobile-hidden">Contul meu</span>
+                        </a>
+                        <a href="./../cart.php">
+                            <span class="icon icon-cart"></span>
+                            <span class="mobile-hidden">Coșul meu</span>
+                        </a>
+                        <?php
+                    } else {
+                        ?>
+                        <a href="./../login.php">
+                            <span class="icon icon-login"></span>
+                            <span class="mobile-hidden">Conectare</span>
+                        </a>
+                        <a href="./../register.php">
+                            <span class="icon icon-user"></span>
+                            <span class="mobile-hidden">Înregistrare cont</span>
+                        </a>
+                        <?php
+                    }
+                    ?>
                 </div>
                 <div class="middle-container middle-v-aligned">
                     <button type="submit" name="searchSub">
@@ -122,6 +147,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Producător:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="manufacturer" form="searchForm" />Oricare<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `manufacturer` FROM `products`";
                         $result = $conn->query($sql);
@@ -141,6 +169,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Preț:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="price" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         $sql = "SELECT MIN(`price`), MAX(`price`) FROM `products`"
                                 . " WHERE `category` = ? AND `subcategory` = ?";
@@ -170,6 +201,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Producător procesor:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="cpu_manufacturer" form="searchForm" />Oricare<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `cpu_manufacturer` FROM `notebook`";
                         $result = $conn->query($sql);
@@ -195,8 +229,11 @@ $subcat = "notebook";
                     </div>
                 </div>
                 <div class="filter-card">
-                    <span class="search-filter-label">Frecvență:</span>
+                    <span class="search-filter-label">Frecvență procesor:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="cpu_frequency" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         for ($i = 0; $i < CPU_FREQ_FILTER_NUM_STEPS; $i++) {
                             $crt_freq_min = $db_range['min_freq'] + $i * $freq_step;
@@ -215,8 +252,11 @@ $subcat = "notebook";
                     </div>
                 </div>
                 <div class="filter-card">
-                    <span class="search-filter-label">Număr nuclee:</span>
+                    <span class="search-filter-label">Număr nuclee procesor:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="cpu_cores" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `cpu_cores` FROM `notebook` ORDER BY `cpu_cores` ASC";
                         $result = $conn->query($sql);
@@ -234,8 +274,11 @@ $subcat = "notebook";
                     </div>
                 </div>
                 <div class="filter-card">
-                    <span class="search-filter-label">Producător:</span>
+                    <span class="search-filter-label">Producător placă video:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="gpu_manufacturer" form="searchForm" />Oricare<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `gpu_manufacturer` FROM `notebook`";
                         $result = $conn->query($sql);
@@ -253,8 +296,11 @@ $subcat = "notebook";
                     </div>
                 </div>
                 <div class="filter-card">
-                    <span class="search-filter-label">Model:</span>
+                    <span class="search-filter-label">Model placă video:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="gpu_model" form="searchForm" />Oricare<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `gpu_model` FROM `notebook`";
                         $result = $conn->query($sql);
@@ -274,6 +320,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Capacitate HDD:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="hdd_cap" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `hdd_cap` FROM `notebook` WHERE `hdd_cap` != 0 ORDER BY `hdd_cap` ASC";
                         $result = $conn->query($sql);
@@ -293,6 +342,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Viteză HDD:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="hdd_speed" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `hdd_speed` FROM `notebook` WHERE `hdd_speed` != 0 ORDER BY `hdd_speed` ASC";
                         $result = $conn->query($sql);
@@ -312,6 +364,9 @@ $subcat = "notebook";
                 <div class="filter-card">
                     <span class="search-filter-label">Capacitate SSD:</span>
                     <div class="filter-card-content">
+                        <label>
+                            <input type="radio" value="" name="ssd_cap" form="searchForm" />Oricât<br />
+                        </label>
                         <?php
                         $sql = "SELECT DISTINCT `ssd_cap` FROM `notebook` WHERE `ssd_cap` != 0 ORDER BY `ssd_cap` ASC";
                         $result = $conn->query($sql);
@@ -427,9 +482,20 @@ $subcat = "notebook";
                         ?>
                         <div class="product-card">
                             <div class="product-card-content">
-                                <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
-                                     height=100 width=150 /><br />
-                                <span class="product-name"><?php echo $row['name']; ?></span>
+                                <a href="#">
+                                    <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
+                                         height=100 width=150 /><br />
+                                    <span class="product-name">Notebook <?php echo $row['name']; ?></span>
+                                </a>
+                                <?php
+                                if ($row['quantity'] > 0) {
+                                    echo "<span class='in-stock-label' style='color:green'>În stoc</span>";
+                                } else {
+                                    echo "<span class='in-stock-label' style='color:red'>Nu este disponibil</span>";
+                                }
+                                ?>
+                                <span class="product-price"><?php echo $row['price']; ?> lei</span>
+                                <button class="product-add-button" form="addProductForm" type="submit" name="addToBasket" value="<?php echo $row['id']; ?>">Adaugă în coș</button>
                             </div>
                         </div>
                         <?php
@@ -438,5 +504,6 @@ $subcat = "notebook";
                 ?>
             </div>
         </div>
+        <form id="addProductForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post"></form>
     </body>
 </html>

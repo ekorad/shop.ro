@@ -18,7 +18,7 @@ input[type="radio"], label {
 }
 
 .filter-card-content {
-    max-height: 100px;
+    max-height: 120px;
     overflow: auto;
 }
 
@@ -30,18 +30,68 @@ input[type="radio"], label {
 .product-card {
     float: left;
     width: 33%;
+    padding-bottom: 20px;
 }
 
 .product-card-content {
+    position: relative;
     float: right;
     width: 90%;
     background-color: #f2f2f2;
     border: 2px solid lightgray;
     border-radius: 15px;
-    padding: 10px;
+    padding: 20px 10px;
     text-align: center;
+    height: 320px;
 }
 
+.product-card-content a {
+    text-decoration: none;
+    color: black;
+}
+
+.product-card-content a:hover .product-name {
+    color: #0099cc;
+}
+
+.product-card-content img {
+    margin-bottom: 10px;
+}
+
+.product-card-content .product-name {
+    margin-top: 10px;
+    transition: color .15s ease-in-out;
+}
+
+.in-stock-label {
+    margin-top: 10px;
+    display: block;
+}
+
+.product-price {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.5em;
+}
+
+.product-add-button {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    position: absolute;
+    border: none;
+    outline: none;
+    background: #0099cc;
+    line-height: 30px;
+    cursor: pointer;
+    width: 150px;
+    color: white;
+    transition: background-color .15s ease-in-out;
+}
+
+.product-add-button:hover {
+    background-color: #1ac6ff;
+}
 
 @media only screen and (max-width: 1300px) {
     #main-content {
