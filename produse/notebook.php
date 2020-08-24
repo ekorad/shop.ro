@@ -1,5 +1,6 @@
 <?php
 require('../includes/connect.php');
+require('../includes/session.php');
 
 $cat = "laptop";
 $subcat = "notebook";
@@ -9,7 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
         header("Location: ./../login.php");
         exit;
     } else {
-        
+        $shoppingCartStr = "";
+        if (!empty($_COOKIE) && isset($_COOKIE['shoppingCart'])) {
+            $shoppingCartStr = $_COOKIE['shoppingCart'];
+        }
+        if ($shoppingCartStr === "") {
+            $shoppingCartStr = strval($_POST['addToBasket']);
+        } else {
+            $shoppingCartStr .= " " . strval($_POST['addToBasket']);
+        }
+        setcookie("shoppingCart", $shoppingCartStr, time() + 60 * 60 * 24 * 30, "/");
+        header("Refresh:0");
     }
 }
 ?>
@@ -54,7 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                             <span class="mobile-hidden">Contul meu</span>
                         </a>
                         <a href="./../cart.php">
-                            <span class="icon icon-cart"></span>
+                            <span style="position:relative" class="icon icon-cart">
+                                <span style="font-size: 0.5em;" id="basketCount">
+                                    <?php
+                                    if (!empty($_COOKIE) && isset($_COOKIE['shoppingCart'])) {
+                                        echo count(explode(" ", $_COOKIE['shoppingCart']));
+                                    } else {
+                                        echo "0";
+                                    }
+                                    ?>
+                                </span>                                    
+                            </span>
                             <span class="mobile-hidden">Coșul meu</span>
                         </a>
                         <?php

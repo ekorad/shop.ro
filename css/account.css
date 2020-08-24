@@ -1,25 +1,69 @@
-#main-body {
-    padding: 50px 20px;
-    margin: 0 auto;
-    height: 1500px;
-    width: 75%;
-    min-width: 800px;
-    max-width: 1300px;
-    background-color: #0099cc;
-    box-shadow: 1px 0 0px #b3b3b3,
-        2px 0 0px #b3b3b3,
-        3px 0 0px #b3b3b3,
-        4px 0 0px #b3b3b3,
-        5px 0 0px #b3b3b3,
-        6px 0 0px #b3b3b3,
-        25px 0 46px -16px rgba(64,64,64,1);
+.article label {
+
 }
 
-#main-body h1 {
+#inactive-account-info {
+    color: red;
     text-align: center;
-    font-size: 3.5em;
-    margin: 0 0 30px 0;
-    padding: 0;
-    color: #FFFFFF;
-    text-shadow: 0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+}
+
+#account-act-success-info {
+    color: green;
+    text-align: center;
+    font-weight: bold;
+}
+
+#main-content form input[type="text"] {
+    outline: 0;
+    border: 0;
+    background-color: transparent;
+    font-size: 1.2em;
+}
+
+#main-content form input[type="submit"] {
+    margin-top: 10px;
+    border: 0;
+    outline: 0;
+    background-color: #0e8dbc;
+    line-height: 30px;
+    padding: 0 30px;
+    color: white;
+    transition: background-color .15s ease-in-out;
+    cursor: pointer;
+}
+
+#main-content form input[type="submit"]:hover {
+    background-color: #0099cc;
+}
+
+.account-detail-row {
+    padding: 10px 0 0 0;
+    height: 40px;
+}
+
+.edit-button {
+    font-size: 1.2em;
+    border: 0;
+    background: transparent;
+    outline: none;
+    height: 100%;
+    transition: color .15s ease-in-out;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    color: red;
+}
+
+.status-span {
+    color: red;
+    font-weight: bold;
+}
+
+.expandable {
+    max-height: 0;
+    margin-top: 10px;
+    padding: 0 20px;
+    overflow: hidden;
+    transition: max-height .3s ease-in-out;
 }

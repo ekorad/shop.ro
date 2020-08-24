@@ -7,10 +7,11 @@ require('includes/session.php');
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Shop</title>
+        <title>Cosul meu</title>
         <link rel="stylesheet" type="text/css" href="css/generic.css" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <link rel="stylesheet" type="text/css" href="css/products.css" />
+        <link rel="stylesheet" type="text/css" href="css/cart.css" />
         <script type="text/javascript" src="scripts/search.js"></script>
         <script>
             setInterval(function () {
