@@ -1,6 +1,33 @@
 <?php
 require('includes/connect.php');
 require('includes/session.php');
+
+if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
+    header("Location: login.php");
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_COOKIE['shoppingCart']) && !empty($_COOKIE['shoppingCart'])) {
+    if (isset($_POST['addIndivToCart']) && !empty($_POST['addIndivToCart'])) {
+        $id = $_POST['addIndivToCart'];
+        setcookie("shoppingCart", $_COOKIE['shoppingCart'] . " " . $id, time() + 60 * 60 * 24 * 30, "/");
+        header("Refresh:0");
+    } else if (isset($_POST['removeIndivFromCart']) && !empty($_POST['removeIndivFromCart'])) {
+        $id = $_POST['removeIndivFromCart'];
+        $ids = explode(" ", $_COOKIE['shoppingCart']);
+        unset($ids[array_search($id, $ids)]);
+        setcookie("shoppingCart", implode(" ", $ids), time() + 60 * 60 * 24 * 30, "/");
+        header("Refresh:0");
+    } else if (isset($_POST['removeTotalIndivFromCart']) && !empty($_POST['removeTotalIndivFromCart'])) {
+        $id = $_POST['removeTotalIndivFromCart'];
+        $ids = explode(" ", $_COOKIE['shoppingCart']);
+        $indexes = array_keys($ids, $id);
+        for ($i = 0; $i < count($indexes); $i++) {
+            unset($ids[$indexes[$i]]);
+        }
+        setcookie("shoppingCart", implode(" ", $ids), time() + 60 * 60 * 24 * 30, "/");
+        header("Refresh:0");
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -86,7 +113,7 @@ require('includes/session.php');
                 <li>
                     <a class="btn-expand" href="javascript:void(0)" onclick="navExpandAction(this)">Laptopuri</a>
                     <div class="dropwdown-content">
-                        <a href="#">Notebook-uri</a>
+                        <a href="./produse/notebook.php">Notebook-uri</a>
                         <a href="#">Ultrabook-uri</a>
                     </div>
                 </li>
@@ -143,7 +170,50 @@ require('includes/session.php');
             </ul>
         </div>
         <div id="main-content" class="middle-content">
+            <?php
+            if (!empty($_COOKIE)) {
+                if (isset($_COOKIE['shoppingCart']) && !empty($_COOKIE['shoppingCart'])) {
+                    $ids = array_map('intval', explode(" ", $_COOKIE['shoppingCart']));
+                    $ids_unique = array_unique($ids);
+                    $ids_unique_str = "(" . implode(",", $ids_unique) . ")";
+                    $ids_counted = array_count_values($ids);
 
+                    $sql = "SELECT `id`, `name`, `price`, `subcategory` FROM `products`"
+                            . " WHERE `id` IN " . $ids_unique_str;
+                    $prod_sel_result = $conn->query($sql);
+                    ?>
+                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
+                          method="post" id="cartForm" name="cartForm">
+                              <?php
+                              while ($row = $prod_sel_result->fetch_assoc()) {
+                                  ?>
+                            <div class="cart-product-card">
+                                <div class="cart-product-card-content">
+                                    <img src="<?php echo "./res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
+                                         height=100 width=150 />
+                                    <span class="cart-product-name"><?php echo ucfirst($row['subcategory']) . " " . $row['name']; ?></span>
+                                    <span class="cart-product-quantity">Cantitate: <?php echo $ids_counted[intval($row['id'])]; ?></span>
+                                    <span class="cart-product-indiv-price">Preț unitar: <?php echo $row['price']; ?> lei</span>
+                                    <span class="cart-product-total-price">Preț total: <?php echo ($ids_counted[intval($row['id'])] * floatval($row['price'])); ?> lei</span>
+                                </div>
+                                <div class="remove-from-cart-container">
+                                    <button type="submit" name="addIndivToCart" value="<?php echo $row['id']; ?>">+</button>
+                                    <button type="submit" name="removeIndivFromCart" value="<?php echo $row['id']; ?>">-</button>
+                                    <button type="submit" name="removeTotalIndivFromCart" value="<?php echo $row['id']; ?>">X</button>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </form>
+                    <?php
+                } else {
+                    echo "Nu ai niciun produs in cos.";
+                }
+            } else {
+                echo "Nu ai niciun produs in cos.";
+            }
+            ?>
         </div>
     </body>
 </html>
