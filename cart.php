@@ -7,7 +7,10 @@ if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_COOKIE['shoppingCart']) && !empty($_COOKIE['shoppingCart'])) {
-    if (isset($_POST['addIndivToCart']) && !empty($_POST['addIndivToCart'])) {
+    if (isset($_POST['removeAllFromBasket'])) {
+        setcookie('shoppingCart', null, -1, '/');
+        header("Refresh:0");
+    } else if (isset($_POST['addIndivToCart']) && !empty($_POST['addIndivToCart'])) {
         $id = $_POST['addIndivToCart'];
         setcookie("shoppingCart", $_COOKIE['shoppingCart'] . " " . $id, time() + 60 * 60 * 24 * 30, "/");
         header("Refresh:0");
@@ -205,13 +208,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_COOKIE['shoppingCart']) && 
                             <?php
                         }
                         ?>
+                        <button type="submit" name="removeAllFromBasket">Golește coșul</button>
+                        <button type="submit" name="continueToCheckout">Plată</button>
                     </form>
                     <?php
                 } else {
-                    echo "Nu ai niciun produs in cos.";
+                    ?>
+                    <div id="empty-basket-container">
+                        <span>Nu ai niciun produs în coș.</span>
+                    </div>
+                    <?php
                 }
             } else {
-                echo "Nu ai niciun produs in cos.";
+                ?>
+                <div id="empty-basket-container">
+                    <span>Nu ai niciun produs în coș.</span>
+                </div>
+                <?php
             }
             ?>
         </div>

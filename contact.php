@@ -11,6 +11,7 @@ require('includes/session.php');
         <link rel="stylesheet" type="text/css" href="css/generic.css" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <link rel="stylesheet" type="text/css" href="css/products.css" />
+        <link rel="stylesheet" type="text/css" href="css/contact.css" />
         <script type="text/javascript" src="scripts/search.js"></script>
         <script>
             setInterval(function () {
@@ -142,7 +143,12 @@ require('includes/session.php');
             </ul>
         </div>
         <div id="main-content" class="middle-content">
-            
+            <form id="contactForm" name="contactForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>"
+                  method="post">
+                <input type="text" name="email" placeholder="Email" />
+                <textarea name="message" rows="30" placeholder="Mesajul tău..."></textarea>
+                <input type="submit" name="contactSub" value="Trimite" />
+            </form>
         </div>
     </body>
 </html>
