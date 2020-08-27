@@ -26,6 +26,24 @@ if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
     $stmt->bind_result($stored_name, $stored_email, $stored_act_status);
     $stmt->fetch();
     $stmt->close();
+
+    if ($_SERVER['REQUEST_METHOD'] === "POST") {
+        if (isset($_POST['addressSub']) && !empty($_POST['addressSub']) && isset($_POST['newAddress']) && !empty($_POST['newAddress'])) {
+            $addr = $_POST['newAddress'];
+            $sql = "INSERT INTO `user_delivery_addresses`(`uid`, `address`) VALUES (?, ?)";
+            $add_addr_stmt = $conn->prepare($sql);
+            $add_addr_stmt->bind_param("is", $_SESSION['uid'], $addr);
+            $add_addr_stmt->execute();
+            $add_addr_stmt->close();
+        } else if (isset($_POST['addressRemove']) && !empty($_POST['addressRemove'])) {
+            $addr_rem_id = $_POST['addressRemove'];
+            $sql = "DELETE FROM `user_delivery_addresses` WHERE `id` = ?";
+            $del_stmt = $conn->prepare($sql);
+            $del_stmt->bind_param("i", $addr_rem_id);
+            $del_stmt->execute();
+            $del_stmt->close();
+        }
+    }
 }
 ?>
 <!DOCTYPE HTML>
@@ -232,8 +250,43 @@ if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
                     <h1>Adrese de livrare:</h1>
                     <form id="addressForm" name="addressForm" method="post"
                           action="">
-                        
+                              <?php
+                              $sql = "SELECT `id`, `address` FROM `user_delivery_addresses`"
+                                      . " WHERE `uid` = ?";
+                              $sel_stmt = $conn->prepare($sql);
+                              $sel_stmt->bind_param("i", $_SESSION['uid']);
+                              $sel_stmt->execute();
+                              $sel_stmt->store_result();
+                              if ($sel_stmt->num_rows > 0) {
+                                  $i = 1;
+                                  $addr_id = NULL;
+                                  $addr_str = NULL;
+                                  $sel_stmt->bind_result($addr_id, $addr_str);
+                                  while ($sel_stmt->fetch()) {
+                                      ?>
+                                <div class="account-detail-row">
+                                    <label for="newAddress">Adresa <?php echo $i; ?>:</label>
+                                    <input type="text" value="<?php echo $addr_str; ?>" readonly/>
+                                    <button class="address-remove-button" type="submit" name="addressRemove" value="<?php echo $addr_id; ?>">Șterge</button>
+                                </div> 
+                                <?php
+                                $i++;
+                            }
+                        }
+                        $sel_stmt->close();
+                        ?>
+                        <div class="account-detail-row">
+                            <label for="newAddress">Adresă nouă:</label>
+                            <input type="text" name="newAddress" />
+                            <input type="submit" name="addressSub" value="Adaugă" />
+                        </div> 
                     </form>
+                </div>
+            </div>
+            <div class="article">
+                <div class="article-content middle-content">
+                    <h1>Deconectare:</h1>
+                    <a href="logout.php">Deconectare</a>
                 </div>
             </div>
         </div>

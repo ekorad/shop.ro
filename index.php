@@ -1,6 +1,25 @@
 <?php
 require('includes/connect.php');
 require('includes/session.php');
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
+    if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
+        header("Location: ./login.php");
+        exit;
+    } else {
+        $shoppingCartStr = "";
+        if (!empty($_COOKIE) && isset($_COOKIE['shoppingCart'])) {
+            $shoppingCartStr = $_COOKIE['shoppingCart'];
+        }
+        if ($shoppingCartStr === "") {
+            $shoppingCartStr = strval($_POST['addToBasket']);
+        } else {
+            $shoppingCartStr .= " " . strval($_POST['addToBasket']);
+        }
+        setcookie("shoppingCart", $shoppingCartStr, time() + 60 * 60 * 24 * 30, "/");
+        header("Refresh:0");
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -59,7 +78,7 @@ require('includes/session.php');
                         <?php
                     } else {
                         ?>
-                        <a href="login.php">
+                        <a href="./login.php">
                             <span class="icon icon-login"></span>
                             <span class="mobile-hidden">Conectare</span>
                         </a>
@@ -85,7 +104,7 @@ require('includes/session.php');
                 <li>
                     <a class="btn-expand" href="javascript:void(0)" onclick="navExpandAction(this)">Laptopuri</a>
                     <div class="dropwdown-content">
-                        <a href="#">Notebook-uri</a>
+                        <a href="produse/notebook.php">Notebook-uri</a>
                         <a href="#">Ultrabook-uri</a>
                     </div>
                 </li>
@@ -138,11 +157,52 @@ require('includes/session.php');
                         <a href="#">Plăci rețea</a>
                     </div>
                 </li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="contact.php">Contact</a></li>
             </ul>
         </div>
         <div id="main-content" class="middle-content">
-            
+            <?php
+            $name_search_str = "";
+            if (isset($_POST['searchVal']) && !empty($_POST['searchVal'])) {
+                $search_string = preg_replace('!\s+!', ' ', $_POST['searchVal']);
+                $search_keywords = explode(" ", $search_string);
+                $size = count($search_keywords);
+                for ($i = 0; $i < $size; $i++) {
+                    $search_keywords[$i] = "`name` LIKE '%" . $search_keywords[$i] . "%'";
+                }
+                $name_search_str = " WHERE (" . implode(" OR ", $search_keywords) . ")";
+            }
+
+            $sql = "SELECT `id`, `name`, `price`, `quantity`, `subcategory`"
+                    . " FROM `products`" . $name_search_str;
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_assoc()) {
+                $img_src = "res/img/products/" . $row['subcategory']
+                        . "/" . $row['id'] . "/img1.png";
+                $href = "produse/" . $row['subcategory'] . ".php?view=" . $row['id'];
+                ?>
+                <div class="product-card">
+                    <div class="product-card-content">
+                        <a href="<?php echo $href; ?>">
+                            <img src="<?php echo $img_src; ?>" 
+                                 height=100 width=150 /><br />
+                            <span class="product-name">Notebook <?php echo $row['name']; ?></span>
+                        </a>
+                        <?php
+                        if ($row['quantity'] > 0) {
+                            echo "<span class='in-stock-label' style='color:green'>În stoc</span>";
+                        } else {
+                            echo "<span class='in-stock-label' style='color:red'>Nu este disponibil</span>";
+                        }
+                        ?>
+                        <span class="product-price"><?php echo $row['price']; ?> lei</span>
+                        <button class="product-add-button" form="addProductForm" type="submit" name="addToBasket" value="<?php echo $row['id']; ?>">Adaugă în coș</button>
+                    </div>
+                </div>
+                <?php
+            }
+            ?>
         </div>
+        <form id="addProductForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post"></form>
     </body>
 </html>

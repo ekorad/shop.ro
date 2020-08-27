@@ -67,3 +67,17 @@
     overflow: hidden;
     transition: max-height .3s ease-in-out;
 }
+
+.address-remove-button {
+    border: 0;
+    outline: 0;
+    padding: 5px 15px;
+    background-color: #0099cc;
+    color: white;
+    cursor: pointer;
+    transition: background-color .15s ease-in-out;
+}
+
+.address-remove-button:hover {
+    background-color: #1ac6ff;
+}

@@ -4,6 +4,11 @@ require('../includes/session.php');
 
 $cat = "laptop";
 $subcat = "notebook";
+$view = false;
+
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['view']) && !empty($_GET['view'])) {
+    $view = true;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
     if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
@@ -407,119 +412,180 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
             </div>
             <div id="product-content">
                 <?php
-                $specific_filter = array();
-
-                $manufacturer = NULL;
-                $min_query_price = 0;
-                $max_query_price = 999999999;
-                $min_cpu_freq = 0;
-                $max_cpu_freq = 50000;
-
-                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
-
-                    if (isset($_POST['price']) && !empty($_POST['price'])) {
-                        $price = $_POST['price'];
-                        $min_query_price = intval(substr($price, 0, strpos($price, "-")));
-                        $max_query_price = intval(substr($price, strpos($price, "-") + 1));
+                if ($view) {
+                    $sql = "SELECT `name`, `price`, `quantity`, `subcategory` FROM `products`"
+                            . " WHERE `id` = ?";
+                    $view_sel_stmt1 = $conn->prepare($sql);
+                    $view_sel_stmt1->bind_param("i", $_GET['view']);
+                    $view_sel_stmt1->execute();
+                    $view_sel_stmt1->store_result();
+                    $stored_name = NULL;
+                    $stored_price = NULL;
+                    $stored_quantity = NULL;
+                    $stored_subcat = NULL;
+                    if ($view_sel_stmt1->num_rows !== 0) {
+                        $view_sel_stmt1->bind_result($stored_name, $stored_price, $stored_quantity, $stored_subcat);
+                        $view_sel_stmt1->fetch();
                     }
-
-                    if (isset($_POST['manufacturer']) && !empty($_POST['manufacturer'])) {
-                        $manufacturer = $_POST['manufacturer'];
-                    }
-
-                    // specific filters
-
-                    if (isset($_POST['cpu_freq']) && !empty($_POST['cpu_freq'])) {
-                        $cpu_freq = $_POST['cpu_freq'];
-                        $min_cpu_freq = intval(substr($cpu_freq, 0, strpos($cpu_freq, "-")));
-                        $max_cpu_freq = intval(substr($cpu_freq, strpos($cpu_freq, "-") + 1));
-
-                        $specific_filter[] = "`cpu_freq` >= $min_cpu_freq AND `cpu_freq` <= $max_cpu_freq";
-                    }
-
-                    if (isset($_POST['cpu_manufacturer']) && !empty($_POST['cpu_manufacturer'])) {
-                        $cpu_manufacturer = $_POST['cpu_manufacturer'];
-                        $specific_filter[] = "`cpu_manufacturer` = '$cpu_manufacturer'";
-                    }
-
-                    if (isset($_POST['cpu_cores']) && !empty($_POST['cpu_cores'])) {
-                        $cpu_cores = $_POST['cpu_cores'];
-                        $specific_filter[] = "`cpu_cores` = $cpu_cores";
-                    }
-
-                    if (isset($_POST['gpu_manufacturer']) && !empty($_POST['gpu_manufacturer'])) {
-                        $gpu_manufacturer = $_POST['gpu_manufacturer'];
-                        $specific_filter[] = "`gpu_manufacturer` = '$gpu_manufacturer'";
-                    }
-
-                    if (isset($_POST['gpu_model']) && !empty($_POST['gpu_model'])) {
-                        $gpu_model = $_POST['gpu_model'];
-                        $specific_filter[] = "`gpu_model` = '$gpu_model'";
-                    }
-
-                    if (isset($_POST['hdd_cap']) && !empty($_POST['hdd_cap'])) {
-                        $hdd_cap = $_POST['hdd_cap'];
-                        $specific_filter[] = "`hdd_cap` = $hdd_cap";
-                    }
-
-                    if (isset($_POST['hdd_speed']) && !empty($_POST['hdd_speed'])) {
-                        $hdd_speed = $_POST['hdd_speed'];
-                        $specific_filter[] = "`hdd_speed` = $hdd_speed";
-                    }
-
-                    if (isset($_POST['ssd_cap']) && !empty($_POST['ssd_cap'])) {
-                        $ssd_speed = $_POST['ssd_cap'];
-                        $specific_filter[] = "`ssd_cap` = $ssd_speed";
-                    }
-                }
-
-                $sql = "SELECT `id` FROM `notebook`";
-
-                if (count($specific_filter) > 0) {
-                    $sql .= " WHERE " . implode(" AND ", $specific_filter);
-                }
-
-//            echo $sql;
-
-                $result = $conn->query($sql);
-                $ids = array();
-                while ($row = $result->fetch_assoc()) {
-                    $ids[] = intval($row['id']);
-                }
-
-                if (!empty($ids)) {
-                    $id_range = "(" . implode(",", $ids) . ")";
-
-                    $sql = "SELECT `id`, `name`, `price`, `quantity` FROM `products`"
-                            . " WHERE `id` IN " . $id_range . " AND `price` >= $min_query_price"
-                            . " AND `price` <= $max_query_price";
-
-                    if (!empty($manufacturer)) {
-                        $sql .= " AND `manufacturer` = '$manufacturer'";
-                    }
-
-                    $result = $conn->query($sql);
-                    while ($row = $result->fetch_assoc()) {
+                    $view_sel_stmt1->close();
+                    $result = NULL;
+                    if ($stored_subcat === "notebook") {
+                        $sql = "SELECT * FROM `notebook` WHERE `id` = ?";
+                        $view_sel_stmt2 = $conn->prepare($sql);
+                        $view_sel_stmt2->bind_param("i", $_GET['view']);
+                        $view_sel_stmt2->execute();
+                        $result = $view_sel_stmt2->get_result();
+                        $row = $result->fetch_assoc();
+                        $view_sel_stmt2->close();
                         ?>
-                        <div class="product-card">
-                            <div class="product-card-content">
-                                <a href="#">
-                                    <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
-                                         height=100 width=150 /><br />
-                                    <span class="product-name">Notebook <?php echo $row['name']; ?></span>
-                                </a>
-                                <?php
-                                if ($row['quantity'] > 0) {
-                                    echo "<span class='in-stock-label' style='color:green'>În stoc</span>";
-                                } else {
-                                    echo "<span class='in-stock-label' style='color:red'>Nu este disponibil</span>";
-                                }
-                                ?>
-                                <span class="product-price"><?php echo $row['price']; ?> lei</span>
-                                <button class="product-add-button" form="addProductForm" type="submit" name="addToBasket" value="<?php echo $row['id']; ?>">Adaugă în coș</button>
+                        <div id="product-view">
+                            <div id="product-view-content">
+                                <img src="<?php echo "./../res/img/products/notebook/" . $_GET['view'] . "/img1.png"; ?>" /><br />
+                                <span class="product-name">Notebook <?php echo $stored_name; ?></span>
+                                <span class="product-price"><?php echo $stored_price; ?> lei</span>
+                                <span class="detail-span">În stoc: <?php echo $stored_quantity; ?></span>
+                                <span class="detail-cat">Specificații:</span>
+                                <span class="spec-cat">Procesor:</span>                                
+                                <span class="detail-span">Producător: <?php echo $row['cpu_manufacturer']; ?></span>
+                                <span class="detail-span">Număr nuclee: <?php echo $row['cpu_cores']; ?></span>
+                                <span class="detail-span">Frecvență: <?php echo $row['cpu_freq']; ?></span>
+                                <span class="spec-cat">Placă video:</span>
+                                <span class="detail-span">Producător: <?php echo $row['gpu_manufacturer']; ?></span>
+                                <span class="detail-span">Model: <?php echo $row['gpu_model']; ?></span>
+                                <span class="spec-cat">Stocare:</span>
+                                <span class="detail-span">Capacitate HDD: <?php echo $row['hdd_cap']; ?></span>
+                                <span class="detail-span">Viteză HDD: <?php echo $row['hdd_speed']; ?></span>
+                                <span class="detail-span">Capacitate SSD: <?php echo $row['ssd_cap']; ?></span>
+                                <button class="view-product-add" form="addProductForm" type="submit" name="addToBasket" value="<?php echo $_GET['view']; ?>">Adaugă în coș</button>
                             </div>
                         </div>
                         <?php
+                    }
+                } else {
+                    $specific_filter = array();
+
+                    $manufacturer = NULL;
+                    $min_query_price = 0;
+                    $max_query_price = 999999999;
+                    $min_cpu_freq = 0;
+                    $max_cpu_freq = 50000;
+
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['searchSub'])) {
+
+                        if (isset($_POST['price']) && !empty($_POST['price'])) {
+                            $price = $_POST['price'];
+                            $min_query_price = intval(substr($price, 0, strpos($price, "-")));
+                            $max_query_price = intval(substr($price, strpos($price, "-") + 1));
+                        }
+
+                        if (isset($_POST['manufacturer']) && !empty($_POST['manufacturer'])) {
+                            $manufacturer = $_POST['manufacturer'];
+                        }
+
+                        // specific filters
+
+                        if (isset($_POST['cpu_freq']) && !empty($_POST['cpu_freq'])) {
+                            $cpu_freq = $_POST['cpu_freq'];
+                            $min_cpu_freq = intval(substr($cpu_freq, 0, strpos($cpu_freq, "-")));
+                            $max_cpu_freq = intval(substr($cpu_freq, strpos($cpu_freq, "-") + 1));
+
+                            $specific_filter[] = "`cpu_freq` >= $min_cpu_freq AND `cpu_freq` <= $max_cpu_freq";
+                        }
+
+                        if (isset($_POST['cpu_manufacturer']) && !empty($_POST['cpu_manufacturer'])) {
+                            $cpu_manufacturer = $_POST['cpu_manufacturer'];
+                            $specific_filter[] = "`cpu_manufacturer` = '$cpu_manufacturer'";
+                        }
+
+                        if (isset($_POST['cpu_cores']) && !empty($_POST['cpu_cores'])) {
+                            $cpu_cores = $_POST['cpu_cores'];
+                            $specific_filter[] = "`cpu_cores` = $cpu_cores";
+                        }
+
+                        if (isset($_POST['gpu_manufacturer']) && !empty($_POST['gpu_manufacturer'])) {
+                            $gpu_manufacturer = $_POST['gpu_manufacturer'];
+                            $specific_filter[] = "`gpu_manufacturer` = '$gpu_manufacturer'";
+                        }
+
+                        if (isset($_POST['gpu_model']) && !empty($_POST['gpu_model'])) {
+                            $gpu_model = $_POST['gpu_model'];
+                            $specific_filter[] = "`gpu_model` = '$gpu_model'";
+                        }
+
+                        if (isset($_POST['hdd_cap']) && !empty($_POST['hdd_cap'])) {
+                            $hdd_cap = $_POST['hdd_cap'];
+                            $specific_filter[] = "`hdd_cap` = $hdd_cap";
+                        }
+
+                        if (isset($_POST['hdd_speed']) && !empty($_POST['hdd_speed'])) {
+                            $hdd_speed = $_POST['hdd_speed'];
+                            $specific_filter[] = "`hdd_speed` = $hdd_speed";
+                        }
+
+                        if (isset($_POST['ssd_cap']) && !empty($_POST['ssd_cap'])) {
+                            $ssd_speed = $_POST['ssd_cap'];
+                            $specific_filter[] = "`ssd_cap` = $ssd_speed";
+                        }
+                    }
+
+                    $sql = "SELECT `id` FROM `notebook`";
+
+                    if (count($specific_filter) > 0) {
+                        $sql .= " WHERE " . implode(" AND ", $specific_filter);
+                    }
+
+                    $result = $conn->query($sql);
+                    $ids = array();
+                    while ($row = $result->fetch_assoc()) {
+                        $ids[] = intval($row['id']);
+                    }
+
+                    if (!empty($ids)) {
+                        $id_range = "(" . implode(",", $ids) . ")";
+
+                        $name_search_str = "";
+                        
+                        if (isset($_POST['searchVal']) && !empty($_POST['searchVal'])) {
+                            $search_string = preg_replace('!\s+!', ' ', $_POST['searchVal']);
+                            $search_keywords = explode(" ", $search_string);
+                            $size =  count($search_keywords);
+                            for ($i = 0; $i < $size; $i++) {
+                                $search_keywords[$i] = "`name` LIKE '%" . $search_keywords[$i] . "%'";
+                            }
+                            $name_search_str = " AND (" . implode(" OR ", $search_keywords) . ")";
+                        }
+
+                        $sql = "SELECT `id`, `name`, `price`, `quantity` FROM `products`"
+                                . " WHERE `id` IN " . $id_range . " AND `price` >= $min_query_price"
+                                . " AND `price` <= $max_query_price" . $name_search_str;
+
+                        if (!empty($manufacturer)) {
+                            $sql .= " AND `manufacturer` = '$manufacturer'";
+                        }
+
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_assoc()) {
+                            ?>
+                            <div class="product-card">
+                                <div class="product-card-content">
+                                    <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?view=" . $row['id']; ?>">
+                                        <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
+                                             height=100 width=150 /><br />
+                                        <span class="product-name">Notebook <?php echo $row['name']; ?></span>
+                                    </a>
+                                    <?php
+                                    if ($row['quantity'] > 0) {
+                                        echo "<span class='in-stock-label' style='color:green'>În stoc</span>";
+                                    } else {
+                                        echo "<span class='in-stock-label' style='color:red'>Nu este disponibil</span>";
+                                    }
+                                    ?>
+                                    <span class="product-price"><?php echo $row['price']; ?> lei</span>
+                                    <button class="product-add-button" form="addProductForm" type="submit" name="addToBasket" value="<?php echo $row['id']; ?>">Adaugă în coș</button>
+                                </div>
+                            </div>
+                            <?php
+                        }
                     }
                 }
                 ?>
