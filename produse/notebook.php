@@ -5,27 +5,34 @@ require('../includes/session.php');
 $cat = "laptop";
 $subcat = "notebook";
 $view = false;
+$crt_page = 0;
 
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['view']) && !empty($_GET['view'])) {
     $view = true;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
-    if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
-        header("Location: ./../login.php");
-        exit;
-    } else {
-        $shoppingCartStr = "";
-        if (!empty($_COOKIE) && isset($_COOKIE['shoppingCart'])) {
-            $shoppingCartStr = $_COOKIE['shoppingCart'];
-        }
-        if ($shoppingCartStr === "") {
-            $shoppingCartStr = strval($_POST['addToBasket']);
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    if (isset($_POST['addToBasket'])) {
+        if (!(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true)) {
+            header("Location: ./../login.php");
+            exit;
         } else {
-            $shoppingCartStr .= " " . strval($_POST['addToBasket']);
+            $shoppingCartStr = "";
+            if (!empty($_COOKIE) && isset($_COOKIE['shoppingCart'])) {
+                $shoppingCartStr = $_COOKIE['shoppingCart'];
+            }
+            if ($shoppingCartStr === "") {
+                $shoppingCartStr = strval($_POST['addToBasket']);
+            } else {
+                $shoppingCartStr .= " " . strval($_POST['addToBasket']);
+            }
+            setcookie("shoppingCart", $shoppingCartStr, time() + 60 * 60 * 24 * 30, "/");
+            header("Refresh:0");
         }
-        setcookie("shoppingCart", $shoppingCartStr, time() + 60 * 60 * 24 * 30, "/");
-        header("Refresh:0");
+    }
+
+    if (isset($_POST['page']) && !empty($_POST['page'])) {
+        $crt_page = $_POST['page'];
     }
 }
 ?>
@@ -239,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                                 <input type="radio" name="cpu_manufacturer"
                                        value="<?php echo $row[0] ?>" form="searchForm" />
                                        <?php echo $row[0]; ?>
-                            </label>
+                            </label><br />
                             <?php
                         }
 
@@ -544,11 +551,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                         $id_range = "(" . implode(",", $ids) . ")";
 
                         $name_search_str = "";
-                        
+
                         if (isset($_POST['searchVal']) && !empty($_POST['searchVal'])) {
                             $search_string = preg_replace('!\s+!', ' ', $_POST['searchVal']);
                             $search_keywords = explode(" ", $search_string);
-                            $size =  count($search_keywords);
+                            $size = count($search_keywords);
                             for ($i = 0; $i < $size; $i++) {
                                 $search_keywords[$i] = "`name` LIKE '%" . $search_keywords[$i] . "%'";
                             }
@@ -563,12 +570,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                             $sql .= " AND `manufacturer` = '$manufacturer'";
                         }
 
+                        $sql .= " LIMIT 15 OFFSET " . ($crt_page * 15);
                         $result = $conn->query($sql);
                         while ($row = $result->fetch_assoc()) {
                             ?>
                             <div class="product-card">
                                 <div class="product-card-content">
-                                    <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?view=" . $row['id']; ?>">
+                                    <a target="_blank" href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?view=" . $row['id']; ?>">
                                         <img src="<?php echo "./../res/img/products/notebook/" . $row['id'] . "/img1.png"; ?>" 
                                              height=100 width=150 /><br />
                                         <span class="product-name">Notebook <?php echo $row['name']; ?></span>
@@ -589,6 +597,24 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                     }
                 }
                 ?>
+                <form id="page-container" method="post"
+                      action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                    
+                           <?php
+                           if ($crt_page === 0) {
+                               $_POST['max-pages'] = intval($result->num_rows / 15 + 1);
+                           }
+                           $num_pages = $_POST['max-pages'];
+                           for ($i = 0; $i < $num_pages; $i++) {
+                               ?>
+                        <button type="submit" class="page-button <?php if ($i == $crt_page) echo "crt-page"; ?>" value="<?php echo $i; ?>" name="page"><?php echo $i + 1; ?></button>
+                        <input style="display:none" type="text" name="max-pages" 
+                           value="<?php echo $_POST['max-pages'] ;?>"/>
+                        <?php
+                    }
+                    ?>
+
+                </form>
             </div>
         </div>
         <form id="addProductForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post"></form>

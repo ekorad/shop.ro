@@ -201,6 +201,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['addToBasket'])) {
                 </div>
                 <?php
             }
+            $num_pages = intval($result->num_rows / 15 + 1);
+            echo $num_pages;
             ?>
         </div>
         <form id="addProductForm" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post"></form>

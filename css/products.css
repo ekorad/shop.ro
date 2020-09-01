@@ -31,6 +31,7 @@ input[type="radio"], label {
     float: left;
     width: 33%;
     padding-bottom: 20px;
+    overflow: hidden;
 }
 
 .product-card-content {
@@ -43,6 +44,7 @@ input[type="radio"], label {
     padding: 20px 10px;
     text-align: center;
     height: 320px;
+    overflow: hidden;
 }
 
 .product-card-content a {
@@ -140,6 +142,21 @@ input[type="radio"], label {
 
 .view-product-add:hover {
     background-color: #33ccff;
+}
+
+#page-container {
+    margin-top: 10px;
+    clear: both;
+    padding: 0 20px;
+    text-align: right;
+}
+
+.page-button {
+    cursor: pointer;
+}
+
+.crt-page {
+    background: gray;
 }
 
 @media only screen and (max-width: 1300px) {

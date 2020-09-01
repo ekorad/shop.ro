@@ -10,6 +10,7 @@ $status_code = 0;
 $stored_id = NULL;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     if (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true
             && !isset($_POST['changeSub'])) {
         $id = $_SESSION['uid'];

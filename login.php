@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['loginSub'])) {
             </div>
             <button type = "submit" name = "loginSub">Conectare</button>
             <a href = "register.php" style = "float: left">Înregistrare cont nou</a>
-            <a href = "forgotten.php" style = "float: right">Mi-am uitat parola</a>
+            <a href = "forgot_pass.php" style = "float: right">Mi-am uitat parola</a>
         </form>
     </body>
 </html>
